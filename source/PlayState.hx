@@ -167,6 +167,8 @@ class PlayState extends MusicBeatState
 	public var camZoomingDecay:Float = 1;
 	private var curSong:String = "";
 
+	var parappaSong:Bool = false;
+
 	public var gfSpeed:Int = 1;
 	public var health:Float = 1;
 	public var combo:Int = 0;
@@ -818,6 +820,9 @@ class PlayState extends MusicBeatState
 		{
 			case 'stress':
 				GameOverSubstate.characterName = 'bf-holding-gf-dead';
+
+			default:
+				parappaSong = true; // this is temporary just so i can test it and crap
 		}
 
 		if(isPixelStage) {
@@ -1168,6 +1173,11 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 		healthBarBG.sprTracker = healthBar;
 
+		if(parappaSong){
+			healthBar.angle = 90;
+			healthBar.screenCenter();
+		}
+
 		iconP1 = new HealthIcon(boyfriend.healthIcon, true);
 		iconP1.y = healthBar.y - 75;
 		iconP1.visible = !ClientPrefs.hideHud;
@@ -1175,10 +1185,16 @@ class PlayState extends MusicBeatState
 		add(iconP1);
 
 		iconP2 = new HealthIcon(dad.healthIcon, false);
-		iconP2.y = healthBar.y - 75;
 		iconP2.visible = !ClientPrefs.hideHud;
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
+
+		if(parappaSong){
+			iconP1.x = 640;
+			iconP2.x = 640 - 150; 
+			// for some reason the healthbars position wont update so im doing this - ger
+		}
+
 		reloadHealthBarColors();
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
@@ -3020,8 +3036,14 @@ class PlayState extends MusicBeatState
 
 		var iconOffset:Int = 26;
 
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
+		if(parappaSong){
+			iconP1.y = healthBar.y + (healthBar.height * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.y - 150) / 2 - iconOffset;
+			iconP2.y = healthBar.y + (healthBar.height * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.y) / 2 - iconOffset * 2;
+			// no idea why this broke
+		} else {
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
+			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
+		}
 
 		if (health > 2)
 			health = 2;
@@ -4433,92 +4455,103 @@ class PlayState extends MusicBeatState
 		return ret;
 	}
 
-	function noteMiss(daNote:Note):Void { //You didn't hit the key and let it go offscreen, also used by Hurt Notes
-		//Dupe note remove
-		notes.forEachAlive(function(note:Note) {
-			if (daNote != note && daNote.mustPress && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs(daNote.strumTime - note.strumTime) < 1) {
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-			}
-		});
-		combo = 0;
-		health -= daNote.missHealth * healthLoss;
-		
+	// parappa does the funny noise when missing now - ger
+function noteMiss(daNote:Note):Void { //You didn't hit the key and let it go offscreen, also used by Hurt Notes
+	//Dupe note remove
+	notes.forEachAlive(function(note:Note) {
+		if (daNote != note && daNote.mustPress && daNote.noteData == note.noteData && daNote.isSustainNote == note.isSustainNote && Math.abs(daNote.strumTime - note.strumTime) < 1) {
+			note.kill();
+			notes.remove(note, true);
+			note.destroy();
+		}
+	});
+	combo = 0;
+	health -= daNote.missHealth * healthLoss;
+
+	if(instakillOnMiss)
+	{
+		vocals.volume = 0;
+		doDeathCheck(true);
+	}
+
+	//For testing purposes
+	//trace(daNote.missHealth);
+	songMisses++;
+	vocals.volume = 0;
+	if(!practiceMode) songScore -= 10;
+
+	totalPlayed++;
+	RecalculateRating(true);
+
+	missSoundEffect(false);
+	var char:Character = boyfriend;
+	if(daNote.gfNote) {
+		char = gf;
+	}
+
+	if(char != null && !daNote.noMissAnimation && char.hasMissAnimations)
+	{
+		var animToPlay:String = singAnimations[Std.int(Math.abs(daNote.noteData))] + 'miss' + daNote.animSuffix;
+		char.playAnim(animToPlay, true);
+	}
+
+	callOnLuas('noteMiss', [notes.members.indexOf(daNote), daNote.noteData, daNote.noteType, daNote.isSustainNote]);
+}
+
+function noteMissPress(direction:Int = 1):Void //You pressed a key when there was no notes to press for this key
+{
+	if(ClientPrefs.ghostTapping) return; //fuck it
+
+	if (!boyfriend.stunned)
+	{
+		health -= 0.05 * healthLoss;
 		if(instakillOnMiss)
 		{
 			vocals.volume = 0;
 			doDeathCheck(true);
 		}
 
-		//For testing purposes
-		//trace(daNote.missHealth);
-		songMisses++;
-		vocals.volume = 0;
-		if(!practiceMode) songScore -= 10;
+		if (combo > 5 && gf != null && gf.animOffsets.exists('sad'))
+		{
+			gf.playAnim('sad');
+		}
+		combo = 0;
 
+		if(!practiceMode) songScore -= 10;
+		if(!endingSong) {
+			songMisses++;
+		}
 		totalPlayed++;
 		RecalculateRating(true);
 
-		var char:Character = boyfriend;
-		if(daNote.gfNote) {
-			char = gf;
-		}
+		missSoundEffect(true);
+		// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
+		// FlxG.log.add('played imss note');
 
-		if(char != null && !daNote.noMissAnimation && char.hasMissAnimations)
+		/*boyfriend.stunned = true;
+		// get stunned for 1/60 of a second, makes you able to
+		new FlxTimer().start(1 / 60, function(tmr:FlxTimer)
 		{
-			var animToPlay:String = singAnimations[Std.int(Math.abs(daNote.noteData))] + 'miss' + daNote.animSuffix;
-			char.playAnim(animToPlay, true);
+			boyfriend.stunned = false;
+		});*/
+
+		if(boyfriend.hasMissAnimations) {
+			boyfriend.playAnim(singAnimations[Std.int(Math.abs(direction))] + 'miss', true);
 		}
-
-		callOnLuas('noteMiss', [notes.members.indexOf(daNote), daNote.noteData, daNote.noteType, daNote.isSustainNote]);
+		vocals.volume = 0;
 	}
+	callOnLuas('noteMissPress', [direction]);
+}
 
-	function noteMissPress(direction:Int = 1):Void //You pressed a key when there was no notes to press for this key
-	{
-		if(ClientPrefs.ghostTapping) return; //fuck it
-
-		if (!boyfriend.stunned)
-		{
-			health -= 0.05 * healthLoss;
-			if(instakillOnMiss)
-			{
-				vocals.volume = 0;
-				doDeathCheck(true);
-			}
-
-			if (combo > 5 && gf != null && gf.animOffsets.exists('sad'))
-			{
-				gf.playAnim('sad');
-			}
-			combo = 0;
-
-			if(!practiceMode) songScore -= 10;
-			if(!endingSong) {
-				songMisses++;
-			}
-			totalPlayed++;
-			RecalculateRating(true);
-
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-			// FlxG.log.add('played imss note');
-
-			/*boyfriend.stunned = true;
-
-			// get stunned for 1/60 of a second, makes you able to
-			new FlxTimer().start(1 / 60, function(tmr:FlxTimer)
-			{
-				boyfriend.stunned = false;
-			});*/
-
-			if(boyfriend.hasMissAnimations) {
-				boyfriend.playAnim(singAnimations[Std.int(Math.abs(direction))] + 'miss', true);
-			}
-			vocals.volume = 0;
-		}
-		callOnLuas('noteMissPress', [direction]);
+function missSoundEffect(press:Bool = true){
+	// making this seperate so adding more characters is easier - ger
+	switch(boyfriend.curCharacter){
+		case 'parrapa':
+			FlxG.sound.play(Paths.soundRandom('funny parappa/parappamiss', 1, 2), FlxG.random.float(0.1, 0.2));
+		default:
+			if(!press) FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 	}
+}
 
 	function opponentNoteHit(note:Note):Void
 	{
