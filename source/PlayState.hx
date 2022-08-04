@@ -858,10 +858,6 @@ class PlayState extends MusicBeatState
 		{
 			case 'stress':
 				GameOverSubstate.characterName = 'bf-holding-gf-dead';
-
-			default:
-				parappaSong = true; // this is temporary just so i can test it and crap
-				freestyleActive = true;
 		}
 
 		if (isPixelStage)
@@ -1056,70 +1052,6 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		if (parappaSong && !ClientPrefs.lowQuality)
-		{
-			/*urappinTxt = new Alphabet(800, 300 + 200, "U rappin'", true);
-				urappinTxt.cameras = [camHUD];
-				add(urappinTxt);
-
-				coolTxt = new Alphabet(1000, 250 + 200, "COOL", true);
-				coolTxt.cameras = [camHUD];
-					   		add(coolTxt);
-
-				goodTxt = new Alphabet(1000, 300 + 200, "GOOD", true);
-				goodTxt.cameras = [camHUD];
-				add(goodTxt);
-
-				badTxt = new Alphabet(1000, 350 + 200, "BAD", true);
-					   	 	badTxt.cameras = [camHUD];
-				add(badTxt);
-
-				awfulTxt = new Alphabet(1000, 400 + 200, "AWFUL", true);
-				awfulTxt.cameras = [camHUD];
-				add(awfulTxt); */
-
-			urappinTxt = new FlxText(800, 300, 0);
-			urappinTxt.text = "U rappin'";
-			urappinTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
-			urappinTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
-
-			urappinTxt.cameras = [camHUD];
-			add(urappinTxt);
-
-			coolTxt = new FlxText(1000, 250 + 200, 0);
-			coolTxt.text = "COOL";
-			coolTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
-			coolTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
-
-			coolTxt.cameras = [camHUD];
-			add(coolTxt);
-
-			goodTxt = new FlxText(1000, 300 + 200, 0);
-			goodTxt.text = "GOOD";
-			goodTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
-			goodTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
-
-			goodTxt.cameras = [camHUD];
-			add(goodTxt);
-
-			badTxt = new FlxText(1000, 350 + 200, 0);
-			badTxt.text = "BAD";
-			badTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
-			badTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
-
-			badTxt.cameras = [camHUD];
-			add(badTxt);
-
-			awfulTxt = new FlxText(1000, 400 + 200, 0);
-			awfulTxt.text = "AWFUL";
-			awfulTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
-			awfulTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
-
-			awfulTxt.cameras = [camHUD];
-			add(awfulTxt);
-			// the new - ger
-		}
-
 		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50).makeGraphic(FlxG.width, 10);
 		if (ClientPrefs.downScroll)
 			strumLine.y = FlxG.height - 150;
@@ -1300,6 +1232,7 @@ class PlayState extends MusicBeatState
 		add(iconP1);
 
 		iconP2 = new HealthIcon(dad.healthIcon, false);
+		iconP2.y = healthBar.y - 75;
 		iconP2.visible = !ClientPrefs.hideHud;
 		iconP2.alpha = ClientPrefs.healthBarAlpha;
 		add(iconP2);
@@ -1334,6 +1267,70 @@ class PlayState extends MusicBeatState
 		if (ClientPrefs.downScroll)
 		{
 			botplayTxt.y = timeBarBG.y - 78;
+		}
+
+		if (parappaSong && !ClientPrefs.lowQuality)
+		{
+			/*urappinTxt = new Alphabet(800, 300 + 200, "U rappin'", true);
+				urappinTxt.cameras = [camHUD];
+				add(urappinTxt);
+
+				coolTxt = new Alphabet(1000, 250 + 200, "COOL", true);
+				coolTxt.cameras = [camHUD];
+					   		add(coolTxt);
+
+				goodTxt = new Alphabet(1000, 300 + 200, "GOOD", true);
+				goodTxt.cameras = [camHUD];
+				add(goodTxt);
+
+				badTxt = new Alphabet(1000, 350 + 200, "BAD", true);
+					   	 	badTxt.cameras = [camHUD];
+				add(badTxt);
+
+				awfulTxt = new Alphabet(1000, 400 + 200, "AWFUL", true);
+				awfulTxt.cameras = [camHUD];
+				add(awfulTxt); */
+
+			urappinTxt = new FlxText(800, 300, 0);
+			urappinTxt.text = "U rappin'";
+			urappinTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			urappinTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			urappinTxt.cameras = [camHUD];
+			add(urappinTxt);
+
+			coolTxt = new FlxText(1000, 250 + 200, 0);
+			coolTxt.text = "COOL";
+			coolTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			coolTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			coolTxt.cameras = [camHUD];
+			add(coolTxt);
+
+			goodTxt = new FlxText(1000, 300 + 200, 0);
+			goodTxt.text = "GOOD";
+			goodTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			goodTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			goodTxt.cameras = [camHUD];
+			add(goodTxt);
+
+			badTxt = new FlxText(1000, 350 + 200, 0);
+			badTxt.text = "BAD";
+			badTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			badTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			badTxt.cameras = [camHUD];
+			add(badTxt);
+
+			awfulTxt = new FlxText(1000, 400 + 200, 0);
+			awfulTxt.text = "AWFUL";
+			awfulTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			awfulTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			awfulTxt.cameras = [camHUD];
+			add(awfulTxt);
+			// the new - ger
 		}
 
 		strumLineNotes.cameras = [camHUD];
@@ -2670,6 +2667,7 @@ class PlayState extends MusicBeatState
 
 		curSong = songData.song;
 
+		parappaSong = SONG.parappaSong;
 		if (SONG.needsVoices)
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 		else
@@ -3837,6 +3835,48 @@ class PlayState extends MusicBeatState
 	{
 		switch (eventName)
 		{
+			case 'Toggle Freestyle':
+				freestyleActive = !freestyleActive;
+				if (freestyleActive)
+				{
+					for (i in playerStrums)
+					{
+						i.alpha = 0.5;
+					}
+					for (i in opponentStrums)
+					{
+						i.alpha = 0.5;
+					}
+				}
+				else
+				{
+					for (i in playerStrums)
+					{
+						i.alpha = 1;
+					}
+					for (i in opponentStrums)
+					{
+						i.alpha = 1;
+					}
+				}
+				if (parappaSong)
+				{
+					if (freestyleActive)
+					{
+						// healthBar.alpha = 0.25;
+						healthBarBG.alpha = 0.25;
+						iconP1.alpha = 0.25;
+						iconP2.alpha = 0.25;
+					}
+					else
+					{
+						// healthBar.alpha = 1;
+						healthBarBG.alpha = 1;
+						iconP1.alpha = 1;
+						iconP2.alpha = 1;
+					}
+				}
+
 			case 'Dadbattle Spotlight':
 				var val:Null<Int> = Std.parseInt(value1);
 				if (val == null)
