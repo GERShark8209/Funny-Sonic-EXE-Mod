@@ -3841,39 +3841,63 @@ class PlayState extends MusicBeatState
 				{
 					for (i in playerStrums)
 					{
-						i.alpha = 0.5;
+						FlxTween.tween(i, {alpha: 0.5}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
 					}
 					for (i in opponentStrums)
 					{
-						i.alpha = 0.5;
+						FlxTween.tween(i, {alpha: 0.5}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
 					}
 				}
 				else
 				{
 					for (i in playerStrums)
 					{
-						i.alpha = 1;
+						FlxTween.tween(i, {alpha: 1}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
 					}
 					for (i in opponentStrums)
 					{
-						i.alpha = 1;
+						FlxTween.tween(i, {alpha: 1}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
 					}
 				}
 				if (parappaSong)
 				{
 					if (freestyleActive)
 					{
-						// healthBar.alpha = 0.25;
-						healthBarBG.alpha = 0.25;
-						iconP1.alpha = 0.25;
-						iconP2.alpha = 0.25;
+						FlxTween.tween(healthBar, {alpha: 0.25}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
+						FlxTween.tween(healthBarBG, {alpha: 0.25}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
+						FlxTween.tween(iconP1, {alpha: 0.25}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
+						FlxTween.tween(iconP2, {alpha: 0.25}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
 					}
 					else
 					{
-						// healthBar.alpha = 1;
-						healthBarBG.alpha = 1;
-						iconP1.alpha = 1;
-						iconP2.alpha = 1;
+						FlxTween.tween(healthBar, {alpha: 1}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
+						FlxTween.tween(healthBarBG, {alpha: 1}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
+						FlxTween.tween(iconP1, {alpha: 1}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
+						FlxTween.tween(iconP2, {alpha: 1}, 0.5, {
+							onComplete: function(twn:FlxTween) {}
+						});
 					}
 				}
 
