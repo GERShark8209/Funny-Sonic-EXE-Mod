@@ -180,6 +180,12 @@ class PlayState extends MusicBeatState
 	private var timeBarBG:AttachedSprite;
 	public var timeBar:FlxBar;
 
+	public var urappinTxt:FlxText;
+	public var coolTxt:FlxText;
+	public var goodTxt:FlxText;
+	public var badTxt:FlxText;
+	public var awfulTxt:FlxText;
+
 	public var ratingsData:Array<Rating> = [];
 	public var sicks:Int = 0;
 	public var goods:Int = 0;
@@ -1009,6 +1015,69 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
+		if(parappaSong && !ClientPrefs.lowQuality){
+			/*urappinTxt = new Alphabet(800, 300 + 200, "U rappin'", true);
+        	urappinTxt.cameras = [camHUD];
+			add(urappinTxt);
+
+        	coolTxt = new Alphabet(1000, 250 + 200, "COOL", true);
+        	coolTxt.cameras = [camHUD];
+       		add(coolTxt);
+
+        	goodTxt = new Alphabet(1000, 300 + 200, "GOOD", true);
+        	goodTxt.cameras = [camHUD];
+        	add(goodTxt);
+
+        	badTxt = new Alphabet(1000, 350 + 200, "BAD", true);
+       	 	badTxt.cameras = [camHUD];
+        	add(badTxt);
+
+        	awfulTxt = new Alphabet(1000, 400 + 200, "AWFUL", true);
+        	awfulTxt.cameras = [camHUD];
+        	add(awfulTxt);*/
+
+			urappinTxt = new FlxText(800, 300, 0);
+			urappinTxt.text = "U rappin'";
+			urappinTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			urappinTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			urappinTxt.cameras = [camHUD];
+			add(urappinTxt);
+
+			coolTxt = new FlxText(1000, 250 + 200, 0);
+			coolTxt.text = "COOL";
+			coolTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			coolTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			coolTxt.cameras = [camHUD];
+			add(coolTxt);
+
+			goodTxt = new FlxText(1000, 300 + 200, 0);
+			goodTxt.text = "GOOD";
+			goodTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			goodTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			goodTxt.cameras = [camHUD];
+			add(goodTxt);
+
+			badTxt = new FlxText(1000, 350 + 200, 0);
+			badTxt.text = "BAD";
+			badTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			badTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			badTxt.cameras = [camHUD];
+			add(badTxt);
+
+			awfulTxt = new FlxText(1000, 400 + 200, 0);
+			awfulTxt.text = "AWFUL";
+			awfulTxt.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, LEFT);
+			awfulTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
+
+			awfulTxt.cameras = [camHUD];
+			add(awfulTxt);
+			// the new - ger
+		}
+
 		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50).makeGraphic(FlxG.width, 10);
 		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
 		strumLine.scrollFactor.set();
@@ -1199,6 +1268,10 @@ class PlayState extends MusicBeatState
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 36, FlxG.width, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		if(parappaSong){
+			scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			scoreTxt.x = 20;
+		}
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 1.25;
 		scoreTxt.visible = !ClientPrefs.hideHud;
@@ -2112,6 +2185,48 @@ class PlayState extends MusicBeatState
 				return;
 			}
 
+			if(parappaSong){
+				var whiteScreenThing:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.WHITE);
+				whiteScreenThing.cameras = [camOther];
+				add(whiteScreenThing);
+
+				var introCardImage:String = 'memory_card';
+				if (Paths.fileExists('images/parappaIntroCards/' + SONG.song, IMAGE)){
+					introCardImage = 'parappaIntroCards/' + SONG.song;
+				}
+
+				var titleScreen = new BGSprite(introCardImage, 0,  0);
+				titleScreen.cameras = [camOther];
+				titleScreen.alpha = 0;
+				add(titleScreen);
+				titleScreen.screenCenter();
+				titleScreen.scrollFactor.set();
+
+				// the fact that this probably isnt synced at all lol - ger
+				startTimer = new FlxTimer().start(1, function(tmr:FlxTimer){ // just to give it time to finish the transition
+					FlxTween.tween(titleScreen, {alpha: 1}, 0.2, {
+						ease: FlxEase.linear,
+						onComplete: function(twn:FlxTween)
+						{
+							startTimer = new FlxTimer().start(1.8, function(tmr:FlxTimer){
+								FlxTween.tween(titleScreen, {alpha: 0}, 0.7, {
+									ease: FlxEase.linear,
+									onComplete: function(twn:FlxTween)
+									{
+										FlxTween.tween(whiteScreenThing, {alpha: 0}, 0.5, {
+											ease: FlxEase.linear,
+											onComplete: function(twn:FlxTween)
+											{
+												trace('finished parappa cutscene');
+											}
+										});
+									}
+								});
+							});
+						}
+					});
+				});
+			} else {
 			startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 			{
 				if (gf != null && tmr.loopsLeft % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && gf.animation.curAnim != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
@@ -2232,6 +2347,7 @@ class PlayState extends MusicBeatState
 				swagCounter += 1;
 				// generateSong('fresh');
 			}, 5);
+			}
 		}
 	}
 
@@ -2285,6 +2401,9 @@ class PlayState extends MusicBeatState
 
 	public function updateScore(miss:Bool = false)
 	{
+		if(parappaSong){
+			scoreTxt.text = 'Score: ' + songScore;
+		}
 		scoreTxt.text = 'Score: ' + songScore
 		+ ' | Misses: ' + songMisses
 		+ ' | Rating: ' + ratingName
@@ -2296,7 +2415,7 @@ class PlayState extends MusicBeatState
 				scoreTxtTween.cancel();
 			}
 			scoreTxt.scale.x = 1.075;
-			scoreTxt.scale.y = 1.075;
+			if(!parappaSong)scoreTxt.scale.y = 1.075;
 			scoreTxtTween = FlxTween.tween(scoreTxt.scale, {x: 1, y: 1}, 0.2, {
 				onComplete: function(twn:FlxTween) {
 					scoreTxtTween = null;
@@ -3047,6 +3166,40 @@ class PlayState extends MusicBeatState
 
 		if (health > 2)
 			health = 2;
+
+		if(parappaSong && !ClientPrefs.lowQuality){
+			if (healthBar.percent >= 0 && healthBar.percent <= 25){
+				awfulTxt.color = 0xFFFFFF;
+				coolTxt.color = 0x666666;
+				badTxt.color = 0x666666;
+				goodTxt.color = 0x666666;
+				urappinTxt.y = 400 + 200;
+			}
+
+			if (healthBar.percent > 25 && healthBar.percent < 50){
+				badTxt.color = 0xFFFFFF;
+				coolTxt.color = 0x666666;
+				awfulTxt.color = 0x666666;
+				goodTxt.color = 0x666666;
+				urappinTxt.y = 350 + 200;
+			}
+
+			if (healthBar.percent >= 50 && healthBar.percent <= 75 || healthBar.percent == 50){
+				goodTxt.color = 0xFFFFFF;
+				coolTxt.color = 0x666666;
+				badTxt.color = 0x666666;
+				awfulTxt.color = 0x666666;
+				urappinTxt.y = 300 + 200;
+			}
+
+			if (healthBar.percent > 75 && healthBar.percent <= 100){
+				coolTxt.color = 0xFFFFFF;
+				awfulTxt.color = 0x666666;
+				badTxt.color = 0x666666;
+				goodTxt.color = 0x666666;
+				urappinTxt.y = 250 + 200;
+			}
+		}
 
 		if (healthBar.percent < 20)
 			iconP1.animation.curAnim.curFrame = 1;
